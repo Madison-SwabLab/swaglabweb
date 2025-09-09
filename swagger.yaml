@@ -1,0 +1,1726 @@
+openapi: 3.0.3
+info:
+  title: SwagLab.ai API
+  description: |
+    Comprehensive REST API for the SwagLab.ai application providing endpoints for user management, job processing, design generation, and apparel visualization.
+    
+    ## Features
+    - User authentication and authorization
+    - Job management and processing
+    - AI-powered design generation
+    - Apparel item creation and management
+    - Pantone color management
+    - Real-time progress tracking
+    
+  version: 1.0.0
+  contact:
+    name: SwagLab.ai Team
+    email: support@swaglab.ai
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.swaglab.ai/api
+    description: Production server
+  - url: https://localhost:7222/api
+    description: Development server
+
+security:
+  - BearerAuth: []
+
+paths:
+  # Authentication Endpoints
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      description: Create a new user account
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            example:
+              username: "johndoe"
+              email: "john@example.com"
+              password: "SecurePassword123!"
+              firstName: "John"
+              lastName: "Doe"
+              phoneNumber: "+1234567890"
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '409':
+          $ref: '#/components/responses/ConflictError'
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user and return JWT tokens
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              email: "john@example.com"
+              password: "SecurePassword123!"
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /auth/refresh:
+    post:
+      tags:
+        - Authentication
+      summary: Refresh access token
+      description: Get a new access token using refresh token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenRequest'
+      responses:
+        '200':
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshTokenResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: User logout
+      description: Invalidate user session
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  # User Management Endpoints
+  /users/profile:
+    get:
+      tags:
+        - Users
+      summary: Get user profile
+      description: Retrieve current user's profile information
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+    put:
+      tags:
+        - Users
+      summary: Update user profile
+      description: Update current user's profile information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+
+  # Job Management Endpoints
+  /jobs:
+    get:
+      tags:
+        - Jobs
+      summary: List user jobs
+      description: Retrieve paginated list of user's jobs
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          description: Items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          description: Filter by job status
+          required: false
+          schema:
+            $ref: '#/components/schemas/JobStatus'
+        - name: sortBy
+          in: query
+          description: Sort field
+          required: false
+          schema:
+            type: string
+            enum: [createdAt, updatedAt, status, brandName]
+            default: createdAt
+        - name: sortOrder
+          in: query
+          description: Sort direction
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Jobs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobListResponse'
+
+    post:
+      tags:
+        - Jobs
+      summary: Create new job
+      description: Create a new processing job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateJobRequest'
+            example:
+              siteUrl: "https://example.com"
+              brandName: "Example Brand"
+              brandPersonality: "Modern and professional"
+              industry: "Technology"
+              targetAudience: "Young professionals"
+              useExistingCompanyLogo: false
+              useUploadedImage: true
+              uploadedImageUrl: "https://example.com/logo.png"
+              designStyles: ["modern", "clean", "minimalist"]
+              designElements: ["geometric", "typography", "icons"]
+              accentColors: ["#FF6B6B", "#4ECDC4", "#45B7D1"]
+              fonts: ["Inter", "Roboto", "Open Sans"]
+              pantoneColorIds: ["uuid1", "uuid2", "uuid3"]
+      responses:
+        '201':
+          description: Job created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /jobs/{id}:
+    get:
+      tags:
+        - Jobs
+      summary: Get job details
+      description: Retrieve detailed information about a specific job
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Job details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobDetailResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      tags:
+        - Jobs
+      summary: Update job
+      description: Update job information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateJobRequest'
+      responses:
+        '200':
+          description: Job updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    delete:
+      tags:
+        - Jobs
+      summary: Delete job
+      description: Delete a job (soft delete)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Job deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /jobs/{id}/start:
+    post:
+      tags:
+        - Jobs
+      summary: Start job processing
+      description: Begin processing a job
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Job processing started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /jobs/{id}/cancel:
+    post:
+      tags:
+        - Jobs
+      summary: Cancel job
+      description: Cancel a running job
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Job cancelled successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /jobs/{id}/progress:
+    get:
+      tags:
+        - Jobs
+      summary: Get job progress (SSE)
+      description: Server-sent events stream for job progress updates
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Progress stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                example: |
+                  event: progress
+                  data: {"status":"processing","progress":50,"currentStep":"Generating designs"}
+
+                  event: complete
+                  data: {"status":"completed","progress":100,"result":"Job completed successfully"}
+
+  # Design Management Endpoints
+  /jobs/{jobId}/designs:
+    get:
+      tags:
+        - Designs
+      summary: List job designs
+      description: Retrieve designs for a specific job
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Designs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DesignListResponse'
+
+    post:
+      tags:
+        - Designs
+      summary: Create design
+      description: Create a new design for a job
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          description: Job ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDesignRequest'
+      responses:
+        '201':
+          description: Design created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DesignResponse'
+
+  /designs/{id}:
+    get:
+      tags:
+        - Designs
+      summary: Get design details
+      description: Retrieve detailed information about a design
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Design ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Design details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DesignDetailResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      tags:
+        - Designs
+      summary: Update design
+      description: Update design information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Design ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDesignRequest'
+      responses:
+        '200':
+          description: Design updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DesignResponse'
+
+    delete:
+      tags:
+        - Designs
+      summary: Delete design
+      description: Delete a design
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Design ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Design deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /designs/{id}/regenerate:
+    post:
+      tags:
+        - Designs
+      summary: Regenerate design
+      description: Regenerate a design with new parameters
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Design ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegenerateDesignRequest'
+      responses:
+        '200':
+          description: Design regenerated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DesignResponse'
+
+  # Apparel Items Endpoints
+  /designs/{designId}/apparel:
+    get:
+      tags:
+        - Apparel
+      summary: List design apparel items
+      description: Retrieve apparel items for a design
+      parameters:
+        - name: designId
+          in: path
+          required: true
+          description: Design ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Apparel items retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApparelListResponse'
+
+    post:
+      tags:
+        - Apparel
+      summary: Create apparel item
+      description: Create a new apparel item for a design
+      parameters:
+        - name: designId
+          in: path
+          required: true
+          description: Design ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApparelRequest'
+      responses:
+        '201':
+          description: Apparel item created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApparelResponse'
+
+  /apparel/{id}:
+    get:
+      tags:
+        - Apparel
+      summary: Get apparel item details
+      description: Retrieve detailed information about an apparel item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Apparel item ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Apparel item details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApparelDetailResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+    put:
+      tags:
+        - Apparel
+      summary: Update apparel item
+      description: Update apparel item information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Apparel item ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateApparelRequest'
+      responses:
+        '200':
+          description: Apparel item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApparelResponse'
+
+    delete:
+      tags:
+        - Apparel
+      summary: Delete apparel item
+      description: Delete an apparel item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Apparel item ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Apparel item deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /apparel/{id}/regenerate:
+    post:
+      tags:
+        - Apparel
+      summary: Regenerate apparel item
+      description: Regenerate an apparel item with new parameters
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Apparel item ID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegenerateApparelRequest'
+      responses:
+        '200':
+          description: Apparel item regenerated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApparelResponse'
+
+  # Pantone Colors Endpoints
+  /colors:
+    get:
+      tags:
+        - Colors
+      summary: List Pantone colors
+      description: Retrieve paginated list of Pantone colors
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          description: Items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: colorFamily
+          in: query
+          description: Filter by color family
+          required: false
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: Search by name or code
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Colors retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColorListResponse'
+
+  /colors/{id}:
+    get:
+      tags:
+        - Colors
+      summary: Get color details
+      description: Retrieve detailed information about a Pantone color
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Color ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Color details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ColorResponse'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # Base Response Schemas
+    BaseResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Indicates if the request was successful
+        message:
+          type: string
+          description: Response message
+        timestamp:
+          type: string
+          format: date-time
+          description: Response timestamp
+
+    SuccessResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            success:
+              type: boolean
+              example: true
+
+    ErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            success:
+              type: boolean
+              example: false
+            error:
+              $ref: '#/components/schemas/ErrorObject'
+
+    ErrorObject:
+      type: object
+      properties:
+        code:
+          type: string
+          enum:
+            - VALIDATION_ERROR
+            - AUTHENTICATION_ERROR
+            - AUTHORIZATION_ERROR
+            - NOT_FOUND
+            - CONFLICT
+            - RATE_LIMIT_EXCEEDED
+            - INTERNAL_ERROR
+            - SERVICE_UNAVAILABLE
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+
+    ValidationError:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+        value:
+          type: string
+
+    PaginationInfo:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+          maximum: 100
+        totalItems:
+          type: integer
+        totalPages:
+          type: integer
+        hasNext:
+          type: boolean
+        hasPrevious:
+          type: boolean
+
+    # Enums
+    JobStatus:
+      type: string
+      enum:
+        - pending
+        - processing
+        - completed
+        - failed
+        - cancelled
+
+    UserRole:
+      type: string
+      enum:
+        - user
+        - admin
+        - moderator
+
+    ItemType:
+      type: string
+      enum:
+        - t-shirt
+        - hat
+        - hoodie
+        - tank-top
+        - long-sleeve
+        - polo
+        - sweatshirt
+        - jacket
+
+    GenerationProvider:
+      type: string
+      enum:
+        - dalle
+        - imagen
+        - stability
+        - replicate
+        - midjourney
+
+    # Authentication Schemas
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - email
+        - password
+        - firstName
+        - lastName
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        firstName:
+          type: string
+          maxLength: 100
+        lastName:
+          type: string
+          maxLength: 100
+        phoneNumber:
+          type: string
+          pattern: '^\+?[1-9]\d{1,14}$'
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    RefreshTokenRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+
+    AuthResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                refreshToken:
+                  type: string
+                expiresIn:
+                  type: integer
+                user:
+                  $ref: '#/components/schemas/User'
+
+    RefreshTokenResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                expiresIn:
+                  type: integer
+
+    # User Schemas
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        avatarUrl:
+          type: string
+          format: uri
+        phoneNumber:
+          type: string
+        bio:
+          type: string
+        role:
+          $ref: '#/components/schemas/UserRole'
+        isActive:
+          type: boolean
+        emailVerified:
+          type: boolean
+        lastLogin:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/User'
+
+    UserProfileResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/User'
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          maxLength: 100
+        lastName:
+          type: string
+          maxLength: 100
+        phoneNumber:
+          type: string
+          pattern: '^\+?[1-9]\d{1,14}$'
+        bio:
+          type: string
+          maxLength: 500
+
+    # Job Schemas
+    CreateJobRequest:
+      type: object
+      required:
+        - siteUrl
+        - brandName
+      properties:
+        siteUrl:
+          type: string
+          format: uri
+        brandName:
+          type: string
+          maxLength: 255
+        brandPersonality:
+          type: string
+        industry:
+          type: string
+          maxLength: 100
+        targetAudience:
+          type: string
+          maxLength: 100
+        useExistingCompanyLogo:
+          type: boolean
+          default: false
+        companyLogoUrl:
+          type: string
+          format: uri
+        useUploadedImage:
+          type: boolean
+          default: false
+        uploadedImageUrl:
+          type: string
+          format: uri
+        designStyles:
+          type: array
+          items:
+            type: string
+        designElements:
+          type: array
+          items:
+            type: string
+        accentColors:
+          type: array
+          items:
+            type: string
+            pattern: '^#[0-9A-Fa-f]{6}$'
+        fonts:
+          type: array
+          items:
+            type: string
+        pantoneColorIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+
+    UpdateJobRequest:
+      type: object
+      properties:
+        brandName:
+          type: string
+          maxLength: 255
+        brandPersonality:
+          type: string
+        targetAudience:
+          type: string
+          maxLength: 100
+
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        siteUrl:
+          type: string
+          format: uri
+        brandName:
+          type: string
+        brandPersonality:
+          type: string
+        industry:
+          type: string
+        targetAudience:
+          type: string
+        useExistingCompanyLogo:
+          type: boolean
+        companyLogoUrl:
+          type: string
+          format: uri
+        useUploadedImage:
+          type: boolean
+        uploadedImageUrl:
+          type: string
+          format: uri
+        designStyles:
+          type: array
+          items:
+            type: string
+        designElements:
+          type: array
+          items:
+            type: string
+        accentColors:
+          type: array
+          items:
+            type: string
+        fonts:
+          type: array
+          items:
+            type: string
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        currentStep:
+          type: string
+        progress:
+          type: integer
+          minimum: 0
+          maximum: 100
+        errorMessage:
+          type: string
+        analysisResult:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        isDeleted:
+          type: boolean
+        deletedAt:
+          type: string
+          format: date-time
+
+    JobResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Job'
+
+    JobDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/Job'
+                - type: object
+                  properties:
+                    designs:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Design'
+                    pantoneColors:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/PantoneColor'
+
+    JobListResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Job'
+                pagination:
+                  $ref: '#/components/schemas/PaginationInfo'
+
+    # Design Schemas
+    CreateDesignRequest:
+      type: object
+      required:
+        - prompt
+      properties:
+        prompt:
+          type: string
+        negativePrompt:
+          type: string
+        aspectRatio:
+          type: string
+          pattern: '^\d+:\d+$'
+          default: '1:1'
+        designStyle:
+          type: string
+        designElements:
+          type: array
+          items:
+            type: string
+        accentColors:
+          type: array
+          items:
+            type: string
+            pattern: '^#[0-9A-Fa-f]{6}$'
+        fonts:
+          type: array
+          items:
+            type: string
+        generationProvider:
+          $ref: '#/components/schemas/GenerationProvider'
+        generationModel:
+          type: string
+
+    UpdateDesignRequest:
+      type: object
+      properties:
+        prompt:
+          type: string
+        negativePrompt:
+          type: string
+        designStyle:
+          type: string
+
+    RegenerateDesignRequest:
+      type: object
+      properties:
+        prompt:
+          type: string
+        negativePrompt:
+          type: string
+        generationProvider:
+          $ref: '#/components/schemas/GenerationProvider'
+
+    Design:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        jobId:
+          type: string
+          format: uuid
+        designImgUrl:
+          type: string
+          format: uri
+        aspectRatio:
+          type: string
+        prompt:
+          type: string
+        negativePrompt:
+          type: string
+        designStyle:
+          type: string
+        designElements:
+          type: array
+          items:
+            type: string
+        accentColors:
+          type: array
+          items:
+            type: string
+        fonts:
+          type: array
+          items:
+            type: string
+        generationProvider:
+          $ref: '#/components/schemas/GenerationProvider'
+        generationModel:
+          type: string
+        generationTimeMs:
+          type: integer
+        generationCost:
+          type: number
+          format: decimal
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        isDeleted:
+          type: boolean
+        deletedAt:
+          type: string
+          format: date-time
+
+    DesignResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Design'
+
+    DesignDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/Design'
+                - type: object
+                  properties:
+                    apparelItems:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ApparelItem'
+                    personRenderings:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/PersonRendering'
+
+    DesignListResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Design'
+
+    # Apparel Schemas
+    CreateApparelRequest:
+      type: object
+      required:
+        - itemType
+      properties:
+        itemType:
+          $ref: '#/components/schemas/ItemType'
+        itemSize:
+          type: string
+          enum: [XS, S, M, L, XL, XXL, XXXL]
+        pantoneColorId:
+          type: string
+          format: uuid
+        description:
+          type: string
+        price:
+          type: number
+          format: decimal
+          minimum: 0
+        salePrice:
+          type: number
+          format: decimal
+          minimum: 0
+        supplierUrl:
+          type: string
+          format: uri
+        supplierProductId:
+          type: string
+        generationPrompt:
+          type: string
+
+    UpdateApparelRequest:
+      type: object
+      properties:
+        description:
+          type: string
+        price:
+          type: number
+          format: decimal
+          minimum: 0
+        salePrice:
+          type: number
+          format: decimal
+          minimum: 0
+        supplierUrl:
+          type: string
+          format: uri
+        supplierProductId:
+          type: string
+
+    RegenerateApparelRequest:
+      type: object
+      properties:
+        generationPrompt:
+          type: string
+        generationProvider:
+          $ref: '#/components/schemas/GenerationProvider'
+
+    ApparelItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        designId:
+          type: string
+          format: uuid
+        pantoneColorId:
+          type: string
+          format: uuid
+        itemType:
+          $ref: '#/components/schemas/ItemType'
+        itemSize:
+          type: string
+        apparelImgUrl1:
+          type: string
+          format: uri
+        apparelImgUrl2:
+          type: string
+          format: uri
+        apparelImgUrl3:
+          type: string
+          format: uri
+        description:
+          type: string
+        price:
+          type: number
+          format: decimal
+        salePrice:
+          type: number
+          format: decimal
+        supplierUrl:
+          type: string
+          format: uri
+        supplierProductId:
+          type: string
+        generationPrompt:
+          type: string
+        generationProvider:
+          $ref: '#/components/schemas/GenerationProvider'
+        generationTimeMs:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        isDeleted:
+          type: boolean
+        deletedAt:
+          type: string
+          format: date-time
+
+    ApparelResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/ApparelItem'
+
+    ApparelDetailResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              allOf:
+                - $ref: '#/components/schemas/ApparelItem'
+                - type: object
+                  properties:
+                    pantoneColor:
+                      $ref: '#/components/schemas/PantoneColor'
+
+    ApparelListResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/ApparelItem'
+
+    # Person Rendering Schema
+    PersonRendering:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        designId:
+          type: string
+          format: uuid
+        personImgUrl:
+          type: string
+          format: uri
+        description:
+          type: string
+        targetAudience:
+          type: string
+        generationPrompt:
+          type: string
+        generationProvider:
+          $ref: '#/components/schemas/GenerationProvider'
+        generationTimeMs:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        isDeleted:
+          type: boolean
+        deletedAt:
+          type: string
+          format: date-time
+
+    # Pantone Color Schemas
+    PantoneColor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        pantoneCode:
+          type: string
+        hex:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+        rgbR:
+          type: integer
+          minimum: 0
+          maximum: 255
+        rgbG:
+          type: integer
+          minimum: 0
+          maximum: 255
+        rgbB:
+          type: integer
+          minimum: 0
+          maximum: 255
+        cmykC:
+          type: number
+          format: decimal
+          minimum: 0
+          maximum: 100
+        cmykM:
+          type: number
+          format: decimal
+          minimum: 0
+          maximum: 100
+        cmykY:
+          type: number
+          format: decimal
+          minimum: 0
+          maximum: 100
+        cmykK:
+          type: number
+          format: decimal
+          minimum: 0
+          maximum: 100
+        description:
+          type: string
+        colorFamily:
+          type: string
+        isMetallic:
+          type: boolean
+        isFluorescent:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ColorResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/PantoneColor'
+
+    ColorListResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+          properties:
+            data:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/PantoneColor'
+                pagination:
+                  $ref: '#/components/schemas/PaginationInfo'
+
+  responses:
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: VALIDATION_ERROR
+              message: The request contains invalid data
+              details:
+                - field: email
+                  message: Email is required
+                - field: password
+                  message: Password must be at least 8 characters
+            timestamp: "2024-01-01T00:00:00Z"
+
+    UnauthorizedError:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: AUTHENTICATION_ERROR
+              message: Authentication required
+            timestamp: "2024-01-01T00:00:00Z"
+
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: NOT_FOUND
+              message: Resource not found
+            timestamp: "2024-01-01T00:00:00Z"
+
+    ConflictError:
+      description: Resource conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            success: false
+            error:
+              code: CONFLICT
+              message: Resource already exists
+            timestamp: "2024-01-01T00:00:00Z"
+
+tags:
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Users
+    description: User management operations
+  - name: Jobs
+    description: Job processing and management
+  - name: Designs
+    description: Design generation and management
+  - name: Apparel
+    description: Apparel item management
+  - name: Colors
+    description: Pantone color management
