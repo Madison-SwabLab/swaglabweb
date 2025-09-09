@@ -6,7 +6,7 @@ This guide provides step-by-step instructions for implementing the SwagLab.ai ap
 
 Before starting implementation, ensure you have:
 - Development Environment: IDE, code editor, or development tools
-- Database: PostgreSQL (recommended) or compatible database
+- Database: Relational database (SQL-based)
 - Language Runtime: Choose your preferred language (C#, Java, Python, etc.)
 - Version Control: Git for source code management
 - Documentation: This guide and the universal class design
@@ -48,25 +48,25 @@ Choose your technology stack and install necessary dependencies:
 dotnet new webapi -n SwagLab
 cd SwagLab
 dotnet add package Microsoft.EntityFrameworkCore
-dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
 ```
 
 **Java (Spring Boot)**
 ```bash
-spring init --dependencies=web,data-jpa,postgresql SwagLab
+spring init --dependencies=web,data-jpa,mysql SwagLab
 ```
 
 **Python (Django)**
 ```bash
 django-admin startproject swaglab
 cd swaglab
-pip install django psycopg2-binary
+pip install django mysqlclient
 ```
 
 **TypeScript (Node.js)**
 ```bash
 npm init -y
-npm install express typeorm pg
+npm install express typeorm mysql2
 ```
 
 ### Step 2: Database Setup
@@ -74,8 +74,9 @@ npm install express typeorm pg
 #### 2.1 Create Database
 ```sql
 CREATE DATABASE swaglab;
-CREATE USER app_user WITH PASSWORD 'your_password';
-GRANT ALL PRIVILEGES ON DATABASE swaglab TO app_user;
+CREATE USER 'app_user'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON swaglab.* TO 'app_user'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
 #### 2.2 Run Schema Scripts

@@ -8,7 +8,7 @@ This document outlines the architecture for the SwagLab.ai application, designed
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Frontend      │    │   Backend API   │    │   Database      │
-│   (React/Vue)   │◄──►│   (.NET Core)   │◄──►│   (PostgreSQL)  │
+│   (React/Vue)   │◄──►│   (REST API)    │◄──►│   (Database)    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
                               │
                               ▼
@@ -22,42 +22,42 @@ This document outlines the architecture for the SwagLab.ai application, designed
 
 ### 1. Project Structure
 ```
-URLImageGenerator.Backend/
+SwagLab.Backend/
 ├── src/
-│   ├── URLImageGenerator.API/           # Web API layer
-│   ├── URLImageGenerator.Core/          # Business logic & entities
-│   ├── URLImageGenerator.Infrastructure/ # Data access & external services
-│   └── URLImageGenerator.Shared/        # Shared utilities
+│   ├── api/                             # Web API layer
+│   ├── core/                            # Business logic & entities
+│   ├── infrastructure/                  # Data access & external services
+│   └── shared/                          # Shared utilities
 ├── tests/
-│   ├── URLImageGenerator.UnitTests/
-│   └── URLImageGenerator.IntegrationTests/
+│   ├── unit/
+│   └── integration/
 └── docs/
 ```
 
 ### 2. Layer Responsibilities
 
-#### API Layer (`URLImageGenerator.API`)
+#### API Layer (`api/`)
 - **Controllers**: Handle HTTP requests/responses
 - **Middleware**: Authentication, logging, error handling
 - **Configuration**: API settings, CORS, Swagger
 - **DTOs**: Request/response models
-- **Validation**: Input validation attributes
+- **Validation**: Input validation
 
-#### Core Layer (`URLImageGenerator.Core`)
+#### Core Layer (`core/`)
 - **Entities**: Domain models
 - **Interfaces**: Service contracts
 - **Services**: Business logic
 - **Enums**: Type definitions
 - **Exceptions**: Custom exceptions
 
-#### Infrastructure Layer (`URLImageGenerator.Infrastructure`)
-- **Data**: Entity Framework context, repositories
+#### Infrastructure Layer (`infrastructure/`)
+- **Data**: Database context, repositories
 - **External Services**: AI service integrations
-- **Storage**: File storage (Azure Blob, AWS S3)
-- **Caching**: Redis implementation
-- **Background Jobs**: Hangfire, Quartz
+- **Storage**: File storage (cloud or local)
+- **Caching**: Cache implementation
+- **Background Jobs**: Job queue processing
 
-#### Shared Layer (`URLImageGenerator.Shared`)
+#### Shared Layer (`shared/`)
 - **Utilities**: Common helper methods
 - **Extensions**: Extension methods
 - **Constants**: Application constants
@@ -169,9 +169,9 @@ GET    /api/colors/{id}             # Get color details
 ## Database Design
 
 ### 1. Database Technology
-- **Primary Database**: PostgreSQL
-- **Caching**: Redis
-- **Search**: Elasticsearch (optional)
+- **Primary Database**: Relational database (SQL-based)
+- **Caching**: In-memory cache (Redis, Memcached, etc.)
+- **Search**: Full-text search engine (optional)
 
 ### 2. Key Design Principles
 - **Normalization**: 3NF with strategic denormalization
@@ -181,7 +181,7 @@ GET    /api/colors/{id}             # Get color details
 - **Audit Trail**: Track all changes
 
 ### 3. Connection Management
-- **Connection Pooling**: Npgsql connection pool
+- **Connection Pooling**: Database connection pool
 - **Read Replicas**: For read-heavy operations
 - **Transaction Management**: Unit of Work pattern
 
@@ -229,7 +229,7 @@ GET    /api/colors/{id}             # Get color details
 ### 3. Performance Optimizations
 - **Async/Await**: Non-blocking operations
 - **Connection Pooling**: Database connections
-- **Lazy Loading**: Entity Framework
+- **Lazy Loading**: ORM lazy loading
 - **Pagination**: Large dataset handling
 - **Background Jobs**: Long-running tasks
 
@@ -290,8 +290,8 @@ GET    /api/colors/{id}             # Get color details
 - **Report Generation**: Analytics
 
 ### 3. Job Queue Management
-- **Hangfire**: .NET background job framework
-- **Redis Backend**: Job storage and processing
+- **Job Queue Framework**: Background job processing framework
+- **Queue Backend**: Job storage and processing
 - **Retry Policies**: Failed job handling
 - **Monitoring**: Job status tracking
 
@@ -318,8 +318,7 @@ GET    /api/colors/{id}             # Get color details
 - **Thumbnails**: Optimized previews
 
 ### 3. Storage Providers
-- **Azure Blob Storage**: Primary storage
-- **AWS S3**: Alternative storage
+- **Cloud Storage**: Primary storage (AWS S3, Azure Blob, Google Cloud)
 - **Local Storage**: Development environment
 - **CDN**: Global content delivery
 
@@ -360,7 +359,7 @@ GET    /api/colors/{id}             # Get color details
 │   Docker        │
 │   Container     │
 ├─────────────────┤
-│   .NET Core     │
+│   Backend       │
 │   Application   │
 ├─────────────────┤
 │   Dependencies  │
@@ -370,8 +369,7 @@ GET    /api/colors/{id}             # Get color details
 ### 3. Orchestration
 - **Docker Compose**: Local development
 - **Kubernetes**: Production orchestration
-- **Azure Container Instances**: Cloud deployment
-- **AWS ECS**: Alternative cloud deployment
+- **Cloud Container Services**: Cloud deployment (AWS ECS, Azure Container Instances, Google Cloud Run)
 
 ## Scalability Considerations
 
