@@ -1,0 +1,596 @@
+# Class Diagram
+
+## Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    User ||--o{ Job : "creates"
+    User ||--o{ UserSession : "has"
+    User ||--o{ ApiKey : "has"
+    User ||--o{ AuditLog : "generates"
+    
+    Job ||--o{ Design : "contains"
+    Job }o--o{ PantoneColor : "uses"
+    
+    Design ||--o{ ApparelItem : "generates"
+    Design ||--o{ PersonRendering : "generates"
+    
+    PantoneColor ||--o{ ApparelItem : "colors"
+    
+    User {
+        uuid id PK
+        string username UK
+        string email UK
+        string passwordHash
+        string firstName
+        string lastName
+        boolean emailVerified
+        datetime lastLogin
+        int failedLoginAttempts
+        string passwordResetToken
+        datetime passwordResetExpires
+        string avatarUrl
+        string phoneNumber
+        string bio
+        string provider
+        string providerId
+        string role
+        boolean isActive
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    Job {
+        uuid id PK
+        uuid userId FK
+        string siteUrl
+        string brandName
+        string brandPersonality
+        string industry
+        string targetAudience
+        boolean useExistingCompanyLogo
+        string companyLogoUrl
+        boolean useUploadedImage
+        string uploadedImageUrl
+        string[] designStyles
+        string[] designElements
+        string[] accentColors
+        string[] fonts
+        string status
+        string currentStep
+        int progress
+        string errorMessage
+        json analysisResult
+        datetime createdAt
+        datetime updatedAt
+        datetime completedAt
+        boolean isDeleted
+        datetime deletedAt
+    }
+    
+    Design {
+        uuid id PK
+        uuid jobId FK
+        string designImgUrl
+        string aspectRatio
+        string prompt
+        string negativePrompt
+        string designStyle
+        string[] designElements
+        string[] accentColors
+        string[] fonts
+        string generationProvider
+        string generationModel
+        int generationTimeMs
+        decimal generationCost
+        datetime createdAt
+        datetime updatedAt
+        boolean isDeleted
+        datetime deletedAt
+    }
+    
+    PantoneColor {
+        uuid id PK
+        string name UK
+        string pantoneCode UK
+        string hex
+        int rgbR
+        int rgbG
+        int rgbB
+        decimal cmykC
+        decimal cmykM
+        decimal cmykY
+        decimal cmykK
+        string description
+        string colorFamily
+        boolean isMetallic
+        boolean isFluorescent
+        datetime createdAt
+        datetime updatedAt
+    }
+    
+    ApparelItem {
+        uuid id PK
+        uuid designId FK
+        uuid pantoneColorId FK
+        string itemType
+        string itemSize
+        string apparelImgUrl1
+        string apparelImgUrl2
+        string apparelImgUrl3
+        string description
+        decimal price
+        decimal salePrice
+        string supplierUrl
+        string supplierProductId
+        string generationPrompt
+        string generationProvider
+        int generationTimeMs
+        datetime createdAt
+        datetime updatedAt
+        boolean isDeleted
+        datetime deletedAt
+    }
+    
+    PersonRendering {
+        uuid id PK
+        uuid designId FK
+        string personImgUrl
+        string description
+        string targetAudience
+        string generationPrompt
+        string generationProvider
+        int generationTimeMs
+        datetime createdAt
+        datetime updatedAt
+        boolean isDeleted
+        datetime deletedAt
+    }
+    
+    UserSession {
+        uuid id PK
+        uuid userId FK
+        string sessionToken UK
+        datetime expiresAt
+        string ipAddress
+        string userAgent
+        boolean isActive
+        datetime createdAt
+    }
+    
+    ApiKey {
+        uuid id PK
+        uuid userId FK
+        string name
+        string keyHash UK
+        string[] permissions
+        boolean isActive
+        datetime lastUsedAt
+        datetime expiresAt
+        datetime createdAt
+    }
+    
+    AuditLog {
+        uuid id PK
+        uuid userId FK
+        string action
+        string resourceType
+        uuid resourceId
+        json details
+        string ipAddress
+        string userAgent
+        datetime createdAt
+    }
+    
+    JobPantoneColor {
+        uuid jobId PK,FK
+        uuid pantoneColorId PK,FK
+        datetime createdAt
+    }
+```
+
+## Class Hierarchy Diagram
+
+```mermaid
+classDiagram
+    class BaseEntity {
+        <<abstract>>
+        +UUID id
+        +DateTime createdAt
+        +DateTime updatedAt
+        +boolean isDeleted
+        +DateTime deletedAt
+        +softDelete()
+        +validate()
+    }
+    
+    class User {
+        +string username
+        +string email
+        +string passwordHash
+        +string firstName
+        +string lastName
+        +boolean emailVerified
+        +string role
+        +boolean isActive
+        +string fullName
+        +string displayName
+        +validatePassword()
+        +hashPassword()
+        +generateResetToken()
+    }
+    
+    class Job {
+        +UUID userId
+        +string siteUrl
+        +string brandName
+        +string status
+        +int progress
+        +boolean isCompleted
+        +boolean isFailed
+        +startProcessing()
+        +updateProgress()
+        +completeJob()
+    }
+    
+    class Design {
+        +UUID jobId
+        +string designImgUrl
+        +string prompt
+        +string aspectRatio
+        +string generationProvider
+        +regenerate()
+        +updatePrompt()
+    }
+    
+    class PantoneColor {
+        +string name
+        +string pantoneCode
+        +string hex
+        +int rgbR
+        +int rgbG
+        +int rgbB
+        +string rgbString
+        +string cmykString
+        +toHex()
+        +toRgb()
+        +getContrastColor()
+    }
+    
+    class ApparelItem {
+        +UUID designId
+        +UUID pantoneColorId
+        +string itemType
+        +decimal price
+        +decimal salePrice
+        +boolean isOnSale
+        +decimal discountPercentage
+        +regenerate()
+        +updatePricing()
+    }
+    
+    class PersonRendering {
+        +UUID designId
+        +string personImgUrl
+        +string targetAudience
+        +regenerate()
+    }
+    
+    class UserSession {
+        +UUID userId
+        +string sessionToken
+        +datetime expiresAt
+        +boolean isActive
+        +boolean isExpired
+        +boolean isValid
+        +extendSession()
+        +invalidate()
+    }
+    
+    class ApiKey {
+        +UUID userId
+        +string name
+        +string keyHash
+        +string[] permissions
+        +boolean isActive
+        +boolean isExpired
+        +boolean isValid
+        +generateKey()
+        +validatePermission()
+    }
+    
+    class AuditLog {
+        +UUID userId
+        +string action
+        +string resourceType
+        +UUID resourceId
+        +json details
+        +logAction()
+        +getAuditTrail()
+    }
+    
+    class JobPantoneColor {
+        +UUID jobId
+        +UUID pantoneColorId
+        +DateTime createdAt
+    }
+    
+    BaseEntity <|-- User
+    BaseEntity <|-- Job
+    BaseEntity <|-- Design
+    BaseEntity <|-- PantoneColor
+    BaseEntity <|-- ApparelItem
+    BaseEntity <|-- PersonRendering
+    BaseEntity <|-- UserSession
+    BaseEntity <|-- ApiKey
+    BaseEntity <|-- AuditLog
+    BaseEntity <|-- JobPantoneColor
+```
+
+## Service Layer Diagram
+
+```mermaid
+classDiagram
+    class IUserService {
+        <<interface>>
+        +createUser(userData) User
+        +getUserById(id) User
+        +getUserByEmail(email) User
+        +updateUser(id, userData) User
+        +deleteUser(id) Boolean
+        +authenticateUser(email, password) AuthResult
+        +refreshToken(refreshToken) AuthResult
+        +resetPassword(email) Boolean
+        +changePassword(userId, oldPassword, newPassword) Boolean
+    }
+    
+    class IJobService {
+        <<interface>>
+        +createJob(userId, jobData) Job
+        +getJobById(id) Job
+        +getJobsByUserId(userId, filters) Job[]
+        +updateJob(id, jobData) Job
+        +deleteJob(id) Boolean
+        +startJobProcessing(id) Boolean
+        +cancelJob(id) Boolean
+        +getJobProgress(id) JobProgress
+    }
+    
+    class IDesignService {
+        <<interface>>
+        +createDesign(jobId, designData) Design
+        +getDesignById(id) Design
+        +getDesignsByJobId(jobId) Design[]
+        +updateDesign(id, designData) Design
+        +deleteDesign(id) Boolean
+        +regenerateDesign(id, prompt, provider) Design
+        +generateDesign(jobId, prompt, parameters) Design
+    }
+    
+    class IApparelService {
+        <<interface>>
+        +createApparelItem(designId, itemData) ApparelItem
+        +getApparelItemById(id) ApparelItem
+        +getApparelItemsByDesignId(designId) ApparelItem[]
+        +updateApparelItem(id, itemData) ApparelItem
+        +deleteApparelItem(id) Boolean
+        +regenerateApparelItem(id, prompt) ApparelItem
+    }
+    
+    class IColorService {
+        <<interface>>
+        +getPantoneColors(filters) PantoneColor[]
+        +getPantoneColorById(id) PantoneColor
+        +searchPantoneColors(query) PantoneColor[]
+        +getColorFamilies() String[]
+        +validateColor(hex) Boolean
+    }
+    
+    class IAuthService {
+        <<interface>>
+        +login(email, password) AuthResult
+        +register(userData) AuthResult
+        +logout(token) Boolean
+        +refreshToken(refreshToken) AuthResult
+        +validateToken(token) Boolean
+        +resetPassword(email) Boolean
+        +changePassword(userId, oldPassword, newPassword) Boolean
+    }
+    
+    class IFileService {
+        <<interface>>
+        +uploadFile(file, path) String
+        +deleteFile(url) Boolean
+        +getFileUrl(path) String
+        +generateThumbnail(url, size) String
+        +compressImage(url, quality) String
+    }
+    
+    class IAIService {
+        <<interface>>
+        +generateImage(prompt, parameters) String
+        +regenerateImage(imageUrl, prompt, parameters) String
+        +generateApparelMockup(designUrl, itemType, color) String
+        +generatePersonRendering(designUrl, prompt) String
+        +analyzeImage(imageUrl) ImageAnalysis
+    }
+    
+    class IBackgroundJobService {
+        <<interface>>
+        +enqueueJob(jobId) Boolean
+        +processJob(jobId) Boolean
+        +cancelJob(jobId) Boolean
+        +getJobStatus(jobId) JobStatus
+        +getJobProgress(jobId) JobProgress
+    }
+    
+    class INotificationService {
+        <<interface>>
+        +sendEmail(to, subject, body) Boolean
+        +sendSMS(to, message) Boolean
+        +sendPushNotification(userId, title, body) Boolean
+        +sendWebhook(url, data) Boolean
+    }
+    
+    class ICacheService {
+        <<interface>>
+        +get(key) Object
+        +set(key, value, ttl) Boolean
+        +delete(key) Boolean
+        +clear() Boolean
+        +exists(key) Boolean
+    }
+    
+    class IAuditService {
+        <<interface>>
+        +logAction(userId, action, resourceType, resourceId, details) Boolean
+        +getAuditTrail(resourceType, resourceId) AuditLog[]
+        +getUserActivity(userId) AuditLog[]
+        +exportAuditLogs(filters) String
+    }
+```
+
+## Data Flow Diagram
+
+```mermaid
+flowchart TD
+    A[User Request] --> B[API Controller]
+    B --> C[Authentication Middleware]
+    C --> D[Authorization Check]
+    D --> E[Service Layer]
+    E --> F[Business Logic]
+    F --> G[Data Access Layer]
+    G --> H[Database]
+    
+    E --> I[External AI Services]
+    E --> J[File Storage]
+    E --> K[Cache Layer]
+    E --> L[Background Jobs]
+    
+    L --> M[Job Queue]
+    M --> N[Background Processor]
+    N --> O[AI Service Integration]
+    O --> P[Result Storage]
+    
+    E --> Q[Event Publisher]
+    Q --> R[Event Bus]
+    R --> S[Event Handlers]
+    S --> T[Notifications]
+    S --> U[Audit Logging]
+    S --> V[Cache Invalidation]
+    
+    H --> W[Database Events]
+    W --> X[Triggers]
+    X --> Y[Audit Logging]
+    X --> Z[Data Validation]
+```
+
+## Component Architecture Diagram
+
+```mermaid
+graph TB
+    subgraph "Frontend Layer"
+        A[Web Application]
+        B[Mobile Application]
+        C[Admin Dashboard]
+    end
+    
+    subgraph "API Gateway"
+        D[Load Balancer]
+        E[Rate Limiting]
+        F[Authentication]
+        G[Request Routing]
+    end
+    
+    subgraph "Application Layer"
+        H[User Service]
+        I[Job Service]
+        J[Design Service]
+        K[Apparel Service]
+        L[Color Service]
+        M[Auth Service]
+    end
+    
+    subgraph "Business Logic Layer"
+        N[Image Processing]
+        O[Color Management]
+        P[Validation Engine]
+        Q[Notification Engine]
+        R[Audit Engine]
+    end
+    
+    subgraph "Data Access Layer"
+        S[User Repository]
+        T[Job Repository]
+        U[Design Repository]
+        V[Apparel Repository]
+        W[Color Repository]
+    end
+    
+    subgraph "External Services"
+        X[AI Image Generation]
+        Y[File Storage]
+        Z[Email Service]
+        AA[SMS Service]
+    end
+    
+    subgraph "Data Layer"
+        BB[PostgreSQL Database]
+        CC[Redis Cache]
+        DD[File Storage]
+        EE[Message Queue]
+    end
+    
+    A --> D
+    B --> D
+    C --> D
+    
+    D --> E
+    E --> F
+    F --> G
+    
+    G --> H
+    G --> I
+    G --> J
+    G --> K
+    G --> L
+    G --> M
+    
+    H --> S
+    I --> T
+    J --> U
+    K --> V
+    L --> W
+    
+    S --> BB
+    T --> BB
+    U --> BB
+    V --> BB
+    W --> BB
+    
+    H --> N
+    I --> O
+    J --> P
+    K --> Q
+    L --> R
+    
+    N --> X
+    O --> Y
+    P --> Z
+    Q --> AA
+    
+    BB --> CC
+    BB --> DD
+    BB --> EE
+```
+
+This comprehensive class design documentation provides:
+
+1. **Universal Syntax**: Language-agnostic class definitions
+2. **Visual Diagrams**: Mermaid diagrams for easy understanding
+3. **Clear Relationships**: Entity relationships and cardinalities
+4. **Service Interfaces**: Well-defined service contracts
+5. **Data Flow**: Complete system data flow
+6. **Component Architecture**: High-level system architecture
+
+The documentation can be easily adapted to any programming language and provides a solid foundation for implementation in C#, Java, Python, TypeScript, Go, or any other language of your choice.
