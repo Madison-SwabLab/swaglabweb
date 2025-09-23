@@ -5,11 +5,14 @@ import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from '@/store/authStore';
 import { Layout } from '@/components/Layout';
 import { HomePage } from '@/pages/HomePage';
+import { HomePageSimple } from '@/pages/HomePageSimple';
+import { HomePageFixed } from '@/pages/HomePageFixed';
 import { LoginPage } from '@/pages/LoginPage';
 import { RegisterPage } from '@/pages/RegisterPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { JobDetailPage } from '@/pages/JobDetailPage';
 import { DesignPage } from '@/pages/DesignPage';
+import Why5MPreSlides from '@/pages/pitch/Why5MPreSlides';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 // Create a client
@@ -57,7 +60,7 @@ function App() {
           />
           <Routes>
             {/* Public routes */}
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<HomePageFixed />} />
             <Route 
               path="/login" 
               element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />} 
@@ -104,6 +107,9 @@ function App() {
                 )
               }
             />
+            
+            {/* Pitch page - public route */}
+            <Route path="/pitch" element={<Why5MPreSlides />} />
             
             {/* Catch all route */}
             <Route path="*" element={<Navigate to="/" replace />} />
