@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from '@/store/authStore';
 import { Layout } from '@/components/Layout';
 import { HomePageFixed } from '@/pages/HomePageFixed';
+import TestPage from '@/pages/TestPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { RegisterPage } from '@/pages/RegisterPage';
 import { DashboardPage } from '@/pages/DashboardPage';
@@ -58,7 +59,8 @@ function App() {
           />
           <Routes>
             {/* Public routes */}
-            <Route path="/" element={<HomePageFixed />} />
+            <Route path="/" element={<TestPage />} />
+            <Route path="/home" element={<HomePageFixed />} />
             <Route 
               path="/login" 
               element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />} 
