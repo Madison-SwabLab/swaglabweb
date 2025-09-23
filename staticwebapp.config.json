@@ -7,7 +7,7 @@
   ],
   "navigationFallback": {
     "rewrite": "/index.html",
-    "exclude": ["/images/*.{png,jpg,jpeg,gif,svg}", "/css/*", "/js/*"]
+    "exclude": ["/images/*.{png,jpg,jpeg,gif,svg}", "/css/*", "/js/*", "/assets/*"]
   },
   "globalHeaders": {
     "X-Content-Type-Options": "nosniff",
@@ -17,6 +17,13 @@
   "mimeTypes": {
     ".json": "application/json",
     ".js": "application/javascript",
-    ".mjs": "application/javascript"
+    ".mjs": "application/javascript",
+    ".css": "text/css",
+    ".html": "text/html"
+  },
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/index.html"
+    }
   }
 }
