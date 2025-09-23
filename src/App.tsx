@@ -59,8 +59,7 @@ function App() {
           />
           <Routes>
             {/* Public routes */}
-            <Route path="/" element={<TestPage />} />
-            <Route path="/home" element={<HomePageFixed />} />
+            <Route path="/" element={<HomePageFixed />} />
             <Route 
               path="/login" 
               element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />} 
