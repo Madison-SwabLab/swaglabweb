@@ -60,7 +60,7 @@ export const HomePageFixed: React.FC = () => {
                 <div className="relative h-[440px] w-full overflow-hidden rounded-xl bg-slate-900/70">
                   {/* Hero Image */}
                   <img 
-                    src="/img/hero.png" 
+                    src="/hero.png" 
                     alt="SwagLab.ai Hero Interface" 
                     className="absolute inset-0 h-full w-full object-cover"
                   />
