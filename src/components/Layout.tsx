@@ -56,7 +56,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     {user?.firstName?.[0] || user?.username?.[0] || 'U'}
                   </span>
                 </div>
-                <span>{user?.displayName || 'User'}</span>
+                <span>{user?.username || 'User'}</span>
               </div>
               <button
                 onClick={logout}

@@ -104,7 +104,7 @@ export class ApiClient {
     localStorage.removeItem('refreshToken');
   }
 
-  private async refreshAccessToken(): Promise<void> {
+  private async refreshTokens(): Promise<void> {
     if (!this.refreshToken) {
       throw new Error('No refresh token available');
     }
@@ -147,7 +147,7 @@ export class ApiClient {
     }
   }
 
-  async refreshToken(): Promise<AuthResponse> {
+  async refreshAccessToken(): Promise<AuthResponse> {
     if (!this.refreshToken) {
       throw new Error('No refresh token available');
     }

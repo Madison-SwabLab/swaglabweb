@@ -1,11 +1,9 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from '@/store/authStore';
 import { Layout } from '@/components/Layout';
-import { HomePage } from '@/pages/HomePage';
-import { HomePageSimple } from '@/pages/HomePageSimple';
 import { HomePageFixed } from '@/pages/HomePageFixed';
 import { LoginPage } from '@/pages/LoginPage';
 import { RegisterPage } from '@/pages/RegisterPage';
