@@ -7,13 +7,13 @@ export default function Why5MPreSlides() {
         <section className="rounded-2xl bg-gradient-to-r from-slate-800/60 to-slate-900/60 p-8 shadow-2xl">
           <div className="flex items-start justify-between gap-6">
             <div>
-              <h1 className="text-3xl font-extrabold">Why $5M Pre</h1>
-              <p className="mt-2 text-slate-300 max-w-prose">Clear, capital-efficient plan to convert PoC → paying pilots while preserving meaningful founder upside. Target runway: 18–24 months.</p>
+              <h1 className="text-3xl font-extrabold">$5M Pre</h1>
+              <p className="mt-2 text-slate-300 max-w-prose">Clear plan to convert PoC → paying customers. Target runway: 18–24 months.</p>
 
               <ul className="mt-6 grid gap-3 sm:grid-cols-2">
                 <li className="rounded-lg border border-white/6 bg-slate-800/40 p-4">
                   <strong className="block text-lg">Team</strong>
-                  <span className="block mt-1 text-slate-300 text-sm">Repeat founders: SaaS exit ($10M) + profitable apparel ops — execution & distribution credibility.</span>
+                  <span className="block mt-1 text-slate-300 text-sm">Repeat founders: SaaS exit + profitable apparel ops — execution & distribution credibility.</span>
                 </li>
                 <li className="rounded-lg border border-white/6 bg-slate-800/40 p-4">
                   <strong className="block text-lg">Proof</strong>
@@ -36,10 +36,10 @@ export default function Why5MPreSlides() {
                 <div className="mt-2 text-2xl font-semibold">$500k @ $5M pre</div>
                 <div className="mt-1 text-sm text-slate-300">Post: $5.5M — investor ownership ≈ 9%</div>
 
-                <div className="mt-4 text-xs text-slate-400">Target outcomes (18–24 months)</div>
+                <div className="mt-4 text-xs text-slate-400">Target outcomes (12-18 months)</div>
                 <ul className="mt-2 space-y-2 text-sm text-slate-300">
                   <li>• Production‑ready product</li>
-                  <li>• 3–5 paid pilot customers</li>
+                  <li>• 4–10 paying enterprise customers</li>
                   <li>• $200–500k ARR</li>
                 </ul>
               </div>
@@ -84,21 +84,21 @@ export default function Why5MPreSlides() {
                   <div className="h-3 w-3 rounded-full bg-[#1f6fb8]" />
                   <div>
                     <div className="text-sm font-semibold">30% — Pilot Integrations & Sales ($150k)</div>
-                    <div className="text-sm text-slate-300">Onboard 3–5 merch customers, create integration templates for factories & distributors.</div>
+                    <div className="text-sm text-slate-300">Onboard 4–10 merch customers, create integration templates.</div>
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
                   <div className="h-3 w-3 rounded-full bg-[#0c4a8a]" />
                   <div>
                     <div className="text-sm font-semibold">20% — Customer Success & Support ($100k)</div>
-                    <div className="text-sm text-slate-300">Pilot support, onboarding, QA for production exports.</div>
+                    <div className="text-sm text-slate-300">Pilot support, onboarding, QA for production.</div>
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
                   <div className="h-3 w-3 rounded-full bg-[#072b45]" />
                   <div>
                     <div className="text-sm font-semibold">10% — Legal & Operations ($50k)</div>
-                    <div className="text-sm text-slate-300">IP, contracts, data licensing, and compliance.</div>
+                    <div className="text-sm text-slate-300">IP, contracts, and compliance.</div>
                   </div>
                 </li>
               </ul>
@@ -121,14 +121,14 @@ export default function Why5MPreSlides() {
               <li>
                 <span className="absolute -left-3 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-400 text-xs font-bold">2</span>
                 <div className="ml-2">
-                  <div className="font-semibold">6–12 months — Live pilots & early revenue</div>
-                  <div className="text-sm text-slate-300">Get 3–5 pilots live; instrument conversion metrics (designs → approvals → orders).</div>
+                  <div className="font-semibold">6–12 months — Live customers & early revenue</div>
+                  <div className="text-sm text-slate-300">Get 4–10 pilots live; instrument conversion metrics (designs → approvals → orders?).</div>
                 </div>
               </li>
               <li>
                 <span className="absolute -left-3 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-indigo-400 text-xs font-bold">3</span>
                 <div className="ml-2">
-                  <div className="font-semibold">12–18 months — Convert to paid accounts</div>
+                  <div className="font-semibold">12–18 months — Grow paid accounts</div>
                   <div className="text-sm text-slate-300">Achieve $200–500k ARR and sign at least one distribution partner.</div>
                 </div>
               </li>
@@ -144,7 +144,7 @@ export default function Why5MPreSlides() {
         </section>
 
         {/* Small footer */}
-        <div className="text-xs text-slate-500">Slide draft generated for SwagLab.ai • Use in seed pitch deck (editable React/Tailwind component)</div>
+        <div className="text-xs text-slate-500"></div>
       </div>
     </div>
   );
