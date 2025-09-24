@@ -21,7 +21,7 @@ export default function Why5MPreSlides() {
                 </li>
                 <li className="rounded-lg border border-white/6 bg-slate-800/40 p-4">
                   <strong className="block text-lg">Moat</strong>
-                  <span className="block mt-1 text-slate-300 text-sm">Proprietary apparel dataset + fine-tuned model optimized for production-ready outputs.</span>
+                  <span className="block mt-1 text-slate-300 text-sm">Proprietary apparel dataset used to for prompt engineering and a fine-tuned model optimized for production-ready outputs.</span>
                 </li>
                 <li className="rounded-lg border border-white/6 bg-slate-800/40 p-4">
                   <strong className="block text-lg">Market</strong>
