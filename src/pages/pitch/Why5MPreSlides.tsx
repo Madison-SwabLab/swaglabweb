@@ -115,21 +115,21 @@ export default function Why5MPreSlides() {
                 <span className="absolute -left-3 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold">1</span>
                 <div className="ml-2">
                   <div className="font-semibold">0–6 months — Production & Pilot signings</div>
-                  <div className="text-sm text-slate-300">Complete infra, harden model, sign first 1–2 pilot integrations.</div>
+                  <div className="text-sm text-slate-300">Complete app, harden model, sign first 2–4 pilot integrations.</div>
                 </div>
               </li>
               <li>
                 <span className="absolute -left-3 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-emerald-400 text-xs font-bold">2</span>
                 <div className="ml-2">
                   <div className="font-semibold">6–12 months — Live customers & early revenue</div>
-                  <div className="text-sm text-slate-300">Get 4–10 pilots live; instrument conversion metrics (designs → approvals → orders?).</div>
+                  <div className="text-sm text-slate-300">Get 4–10 customers live; finalize model and metrics.</div>
                 </div>
               </li>
               <li>
                 <span className="absolute -left-3 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-indigo-400 text-xs font-bold">3</span>
                 <div className="ml-2">
                   <div className="font-semibold">12–18 months — Grow paid accounts</div>
-                  <div className="text-sm text-slate-300">Achieve $200–500k ARR and sign at least one distribution partner.</div>
+                  <div className="text-sm text-slate-300">Achieve $200–500k ARR</div>
                 </div>
               </li>
               <li>
